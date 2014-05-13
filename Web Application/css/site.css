@@ -1,0 +1,21 @@
+html, body { background: #454545; }
+#content { margin-top: 20px; overflow-x: hidden; }
+#storeFinder { position: relative; top: 0; }
+#reviewStores { position: relative; top: 0; }
+#continue{ float: right; }
+#back{ float: left; }
+#content h5 { padding-bottom: 5px; border-bottom: 1px solid #b2b2b2; }
+#reviewSelectedStores { width: 100%; }
+#reviewSelectedStores thead tr th { background: #48AACF; color: #fff; }
+
+ul.store-list { padding: 0; margin: 0; max-height: 300px; overflow-y: scroll; }
+ul.store-list li { width: 100%; padding: 2px 5px; margin: 0 0 5px 0; list-style-type: none; border-radius: 3px; background: #fff; border: 1px solid #777; color: #222; box-shadow: 0 1px 4px rgba(0,0,0,0.2); cursor: pointer; transition: all .2s; }
+ul.store-list li:hover { background: #4DD363; border-color: #555; transition: all .2s; }
+#selectedStores.store-list li { cursor: default; }
+#selectedStores.store-list li:hover { background: #fff; }
+#selectedStores.store-list li .deselect-store { float: right; cursor: pointer; font-size: 18px; padding: 2px; margin-top: 1px; }
+#selectedStores.store-list li .deselect-store:hover { color: orangered; }
+
+.fade { color: #999; }
+i.fa-question { float: right; font-size: 18px; }
+select.combobox { height: auto; }
