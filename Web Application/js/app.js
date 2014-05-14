@@ -1,6 +1,6 @@
 var storeFinder = {
 	// configuration variables
-	apiBaseUrl: 'http://localhost:8080/StoreFinderWebService/webresources/generic/',
+	apiBaseUrl: 'http://localhost:8080/StoreFinderWebService/api/',
 	noResultsText: '-- No results --',
 	mobileWidth: 768,
 	animationSpeed: 300,
