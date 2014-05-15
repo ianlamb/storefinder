@@ -30,7 +30,7 @@ import storeFinder.ApplicationConfig;
 @RunWith(Suite.class)
 @Suite.SuiteClasses({})
 public class TestSuite {
-    
+
     @BeforeClass
     public static void setUpClass() throws Exception {
     }

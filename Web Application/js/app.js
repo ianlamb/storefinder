@@ -78,7 +78,7 @@ var storeFinder = {
 				dataType: 'json',
 				success: function(data) {
 					if(data.provinces) {
-						drawProvinceList(data);
+						storeFinder.drawProvinceList(data);
 					} else if(data.status == "error") {
 						alert(data.message);
 					} else {
@@ -130,7 +130,7 @@ var storeFinder = {
 				dataType: 'json',
 				success: function(data) {
 					if(data.cities) {
-						drawCityList(data);
+						storeFinder.drawCityList(data);
 					} else if(data.status == "error") {
 						alert(data.message);
 					} else {
@@ -182,7 +182,7 @@ var storeFinder = {
 				dataType: 'json',
 				success: function(data) {
 					if(data.stores) {
-						drawStoreList(data);
+						storeFinder.drawStoreList(data);
 					} else if(data.status == "error") {
 						alert(data.message);
 					} else {
@@ -349,13 +349,13 @@ var storeFinder = {
 			{ "id": "3", "province_id": "2", "name": "San Francisco" }
 		],
 		stores: [
-			{ "id": "1", "city_id": "1", "province_id": "1", "country_id": "1", "name": "Orange Square" },
-			{ "id": "2", "city_id": "1", "province_id": "1", "country_id": "1", "name": "Blue Square" },
-			{ "id": "3", "city_id": "1", "province_id": "1", "country_id": "1", "name": "Red Circle" },
-			{ "id": "4", "city_id": "2", "province_id": "1", "country_id": "1", "name": "Yellow Triangle" },
-			{ "id": "5", "city_id": "2", "province_id": "1", "country_id": "1", "name": "Black Square" },
-			{ "id": "6", "city_id": "3", "province_id": "2", "country_id": "2", "name": "Blue Triangle" },
-			{ "id": "7", "city_id": "3", "province_id": "2", "country_id": "2", "name": "Orange Circle" },
+			{ "id": "1", "city_id": "1", "province_id": "1", "country_id": "1", "city": "London", "province": "Ontario", "country": "Canada", "name": "Orange Square" },
+			{ "id": "2", "city_id": "1", "province_id": "1", "country_id": "1", "city": "London", "province": "Ontario", "country": "Canada", "name": "Blue Square" },
+			{ "id": "3", "city_id": "1", "province_id": "1", "country_id": "1", "city": "London", "province": "Ontario", "country": "Canada", "name": "Red Circle" },
+			{ "id": "4", "city_id": "2", "province_id": "1", "country_id": "1", "city": "Toronto", "province": "Ontario", "country": "Canada", "name": "Yellow Triangle" },
+			{ "id": "5", "city_id": "2", "province_id": "1", "country_id": "1", "city": "Toronto", "province": "Ontario", "country": "Canada", "name": "Black Square" },
+			{ "id": "6", "city_id": "3", "province_id": "2", "country_id": "2", "city": "San Francisco", "province": "California", "country": "United States", "name": "Blue Triangle" },
+			{ "id": "7", "city_id": "3", "province_id": "2", "country_id": "2", "city": "San Francisco", "province": "California", "country": "United States", "name": "Orange Circle" }
 		]
 	},
 	getStubCountries: function() {
