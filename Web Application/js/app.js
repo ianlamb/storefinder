@@ -1,5 +1,6 @@
 var storeFinder = {
 	// configuration variables
+	useStubData: true,
 	apiBaseUrl: 'http://localhost:8080/StoreFinderWebService/api/',
 	noResultsText: '-- No results --',
 	mobileWidth: 768,
@@ -17,38 +18,49 @@ var storeFinder = {
 	
 	// load a list of countries in the world
 	loadCountries: function() {
-		$.ajax({
-			url: this.apiBaseUrl + 'countries',
-			type: 'GET',
-			dataType: 'json',
-			success: function(data) {
-				if(data.countries) {
-					if(data.countries.length > 0) {
-						var newCountryList = '';
-						if(storeFinder.isMobile) newCountryList += '<option></option>';
-						
-						for(var i = 0; i < data.countries.length; i++) {
-							newCountryList += '<option value="' + data.countries[i].id + '">' + data.countries[i].name + '</option>';
-						}
-						
-						$('#filteredStores').empty();
-						$('#city').empty();
-						$('#province').empty();
-						$('#country').html(newCountryList);
+		if(this.useStubData) {
+			storeFinder.drawCountryList(storeFinder.getStubCountries());
+		} else {
+			$.ajax({
+				url: this.apiBaseUrl + 'countries',
+				type: 'GET',
+				dataType: 'json',
+				success: function(data) {
+					if(data.countries) {
+						storeFinder.drawCountryList(data);
+					} else if(data.status == "error") {
+						alert(data.message);
 					} else {
-						alert('Sorry, we had a malfunction and couldn\'t retrieve any data for you.');
+						alert('Unexpected data returned from server');
 					}
-				} else if(data.status == "error") {
-					alert(data.message);
-				} else {
-					alert('Unexpected data returned from server');
+				},
+				error: function(xhr, ajaxOptions, thrownError) {
+					if(confirm("Status " + xhr.status + " returned from server. Would you like to use stub data instead?")) {
+						storeFinder.useStubData = true;
+						storeFinder.loadCountries();
+					}
 				}
-			},
-			error: function(xhr, ajaxOptions, thrownError) {
-				alert(xhr.status + ' - ' + thrownError);
-			}
-		});
+			});
+		}
 	},
+	drawCountryList: function(data) {
+		if(data.countries.length > 0) {
+			var newCountryList = '';
+			if(storeFinder.isMobile) newCountryList += '<option></option>';
+			
+			for(var i = 0; i < data.countries.length; i++) {
+				newCountryList += '<option value="' + data.countries[i].id + '">' + data.countries[i].name + '</option>';
+			}
+			
+			$('#filteredStores').empty();
+			$('#city').empty();
+			$('#province').empty();
+			$('#country').html(newCountryList);
+		} else {
+			alert('Sorry, we had a malfunction and couldn\'t retrieve any data for you.');
+		}
+	},
+
 	// load a list of provinces based on country
 	loadProvinces: function() {
 		if(storeFinder.selectedCountry == storeFinder.noResultsText || storeFinder.selectedCountry == '') {
@@ -56,40 +68,51 @@ var storeFinder = {
 			storeFinder.loadStores();
 			return false;
 		}
-			
-		$.ajax({
-			url: this.apiBaseUrl + 'provinces/' + storeFinder.selectedCountry,
-			type: 'GET',
-			dataType: 'json',
-			success: function(data) {
-				if(data.provinces) {
-					if(data.provinces.length > 0) {
-						var newProvinceList = '';
-						if(storeFinder.isMobile) newProvinceList += '<option></option>';
-						
-						for(var i = 0; i < data.provinces.length; i++) {
-							newProvinceList += '<option value="' + data.provinces[i].id + '">' + data.provinces[i].name + '</option>';
-						}
-						
-						$('#city').empty();
-						$('#province').html(newProvinceList);
+		
+		if(this.useStubData) {
+			storeFinder.drawProvinceList(storeFinder.getStubProvinces());
+		} else {
+			$.ajax({
+				url: this.apiBaseUrl + 'provinces/' + storeFinder.selectedCountry,
+				type: 'GET',
+				dataType: 'json',
+				success: function(data) {
+					if(data.provinces) {
+						drawProvinceList(data);
+					} else if(data.status == "error") {
+						alert(data.message);
 					} else {
-						$('#province').html('<option value="" class="fade">' + storeFinder.noResultsText + '</option>');
+						alert('Unexpected data returned from server');
 					}
-						
-					// reload the store list
-					storeFinder.loadStores();
-				} else if(data.status == "error") {
-					alert(data.message);
-				} else {
-					alert('Unexpected data returned from server');
+				},
+				error: function(xhr, ajaxOptions, thrownError) {
+					if(confirm("Status " + xhr.status + " returned from server. Would you like to use stub data instead?")) {
+						storeFinder.useStubData = true;
+						storeFinder.loadCountries();
+					}
 				}
-			},
-			error: function(xhr, ajaxOptions, thrownError) {
-				alert(xhr.status + ' - ' + thrownError);
-			}
-		});
+			});
+		}
 	},
+	drawProvinceList: function(data) {
+		if(data.provinces.length > 0) {
+			var newProvinceList = '';
+			if(storeFinder.isMobile) newProvinceList += '<option></option>';
+			
+			for(var i = 0; i < data.provinces.length; i++) {
+				newProvinceList += '<option value="' + data.provinces[i].id + '">' + data.provinces[i].name + '</option>';
+			}
+			
+			$('#city').empty();
+			$('#province').html(newProvinceList);
+		} else {
+			$('#province').html('<option value="" class="fade">' + storeFinder.noResultsText + '</option>');
+		}
+			
+		// reload the store list
+		storeFinder.loadStores();
+	},
+
 	// load a list of cities based on province
 	loadCities: function() {
 		if(storeFinder.selectedProvince == storeFinder.noResultsText || storeFinder.selectedProvince == '') {
@@ -98,38 +121,49 @@ var storeFinder = {
 			return false;
 		}
 			
-		$.ajax({
-			url: this.apiBaseUrl + 'cities/' + storeFinder.selectedProvince,
-			type: 'GET',
-			dataType: 'json',
-			success: function(data) {
-				if(data.cities) {
-					if(data.cities.length > 0) {
-						var newCityList = '';
-						if(storeFinder.isMobile) newCityList += '<option></option>';
-						
-						for(var i = 0; i < data.cities.length; i++) {
-							newCityList += '<option value="' + data.cities[i].id + '">' + data.cities[i].name + '</option>';
-						}
-						
-						$('#city').html(newCityList);
+		if(this.useStubData) {
+			storeFinder.drawCityList(storeFinder.getStubCities());
+		} else {
+			$.ajax({
+				url: this.apiBaseUrl + 'cities/' + storeFinder.selectedProvince,
+				type: 'GET',
+				dataType: 'json',
+				success: function(data) {
+					if(data.cities) {
+						drawCityList(data);
+					} else if(data.status == "error") {
+						alert(data.message);
 					} else {
-						$('#city').html('<option value="" class="fade">' + storeFinder.noResultsText + '</option>');
+						alert('Unexpected data returned from server');
 					}
-						
-					// reload the store list
-					storeFinder.loadStores();
-				} else if(data.status == "error") {
-					alert(data.message);
-				} else {
-					alert('Unexpected data returned from server');
+				},
+				error: function(xhr, ajaxOptions, thrownError) {
+					if(confirm("Status " + xhr.status + " returned from server. Would you like to use stub data instead?")) {
+						storeFinder.useStubData = true;
+						storeFinder.loadCountries();
+					}
 				}
-			},
-			error: function(xhr, ajaxOptions, thrownError) {
-				alert(xhr.status + ' - ' + thrownError);
-			}
-		});
+			});
+		}
 	},
+	drawCityList: function(data) {
+		if(data.cities.length > 0) {
+			var newCityList = '';
+			if(storeFinder.isMobile) newCityList += '<option></option>';
+			
+			for(var i = 0; i < data.cities.length; i++) {
+				newCityList += '<option value="' + data.cities[i].id + '">' + data.cities[i].name + '</option>';
+			}
+			
+			$('#city').html(newCityList);
+		} else {
+			$('#city').html('<option value="" class="fade">' + storeFinder.noResultsText + '</option>');
+		}
+			
+		// reload the store list
+		storeFinder.loadStores();
+	},
+
 	// load a list of stores based on city
 	loadStores: function() {
 		// reload selected city, province and country so we don't screw up the query params
@@ -138,36 +172,47 @@ var storeFinder = {
 		storeFinder.selectedCity = $('#city').val();
 		storeFinder.nameSearch = $('#name').val();
 	
-		$.ajax({
-			url: this.apiBaseUrl + 'stores',
-			data: { countryid: storeFinder.selectedCountry, provinceid: storeFinder.selectedProvince, cityid: storeFinder.selectedCity },
-			type: 'GET',
-			dataType: 'json',
-			success: function(data) {
-				if(data.stores) {
-					if(data.stores.length > 0) {
-						storeFinder.filteredStores = data.stores;
-						var newStoreList = '';
-						for(var i = 0; i < storeFinder.filteredStores.length; i++) {
-							newStoreList += '<li id="store-' + storeFinder.filteredStores[i].id + '">' + storeFinder.filteredStores[i].name + '</li>';
-						}
-						
-						$('#filteredStores').html(newStoreList);
-						storeFinder.searchStores();
+		if(this.useStubData) {
+			storeFinder.drawStoreList(storeFinder.getStubStores());
+		} else {
+			$.ajax({
+				url: this.apiBaseUrl + 'stores',
+				data: { countryid: storeFinder.selectedCountry, provinceid: storeFinder.selectedProvince, cityid: storeFinder.selectedCity },
+				type: 'GET',
+				dataType: 'json',
+				success: function(data) {
+					if(data.stores) {
+						drawStoreList(data);
+					} else if(data.status == "error") {
+						alert(data.message);
 					} else {
-						$('#filteredStores').html('');
+						alert('Unexpected data returned from server');
 					}
-				} else if(data.status == "error") {
-					alert(data.message);
-				} else {
-					alert('Unexpected data returned from server');
+				},
+				error: function(xhr, ajaxOptions, thrownError) {
+					if(confirm("Status " + xhr.status + " returned from server. Would you like to use stub data instead?")) {
+						storeFinder.useStubData = true;
+						storeFinder.loadCountries();
+					}
 				}
-			},
-			error: function(xhr, ajaxOptions, thrownError) {
-				alert(xhr.status + ' - ' + thrownError);
-			}
-		});
+			});
+		}
 	},
+	drawStoreList: function(data) {
+		if(data.stores.length > 0) {
+			storeFinder.filteredStores = data.stores;
+			var newStoreList = '';
+			for(var i = 0; i < storeFinder.filteredStores.length; i++) {
+				newStoreList += '<li id="store-' + storeFinder.filteredStores[i].id + '">' + storeFinder.filteredStores[i].name + '</li>';
+			}
+			
+			$('#filteredStores').html(newStoreList);
+			storeFinder.searchStores();
+		} else {
+			$('#filteredStores').html('');
+		}
+	},
+
 	// filters the stores result list by partial name match
 	searchStores: function() {
 		var newStoreList = '';
@@ -285,16 +330,57 @@ var storeFinder = {
 			else
 				$('#storeFinder').css('left', (($(window).width() - 450) * -1) + 'px');
 		}
-	}
-}
+	},
 
-function findById(source, id) {
-	for (var i = 0; i < source.length; i++) {
-		if (source[i].id === id) {
-			return source[i];
-		}
+	// stub data for testing the UI without a working API/backend
+	stubData: {
+		countries: [
+			{ "id": "1", "name": "Canada" },
+			{ "id": "2", "name": "United States" }
+		
+		],
+		provinces: [
+			{ "id": "1", "country_id": "1", "name": "Ontario" },
+			{ "id": "2", "country_id": "2", "name": "California" }
+		],
+		cities: [
+			{ "id": "1", "province_id": "1", "name": "London" },
+			{ "id": "2", "province_id": "1", "name": "Toronto" },
+			{ "id": "3", "province_id": "2", "name": "San Francisco" }
+		],
+		stores: [
+			{ "id": "1", "city_id": "1", "province_id": "1", "country_id": "1", "name": "Orange Square" },
+			{ "id": "2", "city_id": "1", "province_id": "1", "country_id": "1", "name": "Blue Square" },
+			{ "id": "3", "city_id": "1", "province_id": "1", "country_id": "1", "name": "Red Circle" },
+			{ "id": "4", "city_id": "2", "province_id": "1", "country_id": "1", "name": "Yellow Triangle" },
+			{ "id": "5", "city_id": "2", "province_id": "1", "country_id": "1", "name": "Black Square" },
+			{ "id": "6", "city_id": "3", "province_id": "2", "country_id": "2", "name": "Blue Triangle" },
+			{ "id": "7", "city_id": "3", "province_id": "2", "country_id": "2", "name": "Orange Circle" },
+		]
+	},
+	getStubCountries: function() {
+		return { countries: storeFinder.stubData.countries };
+	},
+	getStubProvinces: function() {
+		var provinces = $.grep(storeFinder.stubData.provinces,
+           function(o,i) { return o.country_id == storeFinder.selectedCountry; },
+           false);
+		return { provinces: provinces };
+	},
+	getStubCities: function() {
+		var cities = $.grep(storeFinder.stubData.cities,
+           function(o,i) { return o.province_id == storeFinder.selectedProvince; },
+           false);
+		return { cities: cities };
+	},
+	getStubStores: function() {
+		var stores = $.grep(storeFinder.stubData.stores,
+           function(o,i) { return o.country_id == storeFinder.selectedCountry 
+           				&& (storeFinder.selectedProvince == '' || storeFinder.selectedProvince == null || storeFinder.selectedProvince == o.province_id)
+           				&& (storeFinder.selectedCity == '' || storeFinder.selectedCity == null || storeFinder.selectedCity == o.city_id); },
+           false);
+		return { stores: stores };
 	}
-	return false;
 }
 
 
@@ -337,3 +423,12 @@ $(function() {
 		storeFinder.sizeForMobile();
 	});
 });
+
+function findById(source, id) {
+	for (var i = 0; i < source.length; i++) {
+		if (source[i].id === id) {
+			return source[i];
+		}
+	}
+	return false;
+}
