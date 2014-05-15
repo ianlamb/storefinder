@@ -39,7 +39,7 @@ public class ServiceResource {
      */
     public ServiceResource() {
         try {
-            con = DriverManager.getConnection("jdbc:derby://localhost:1527/Stores");
+            con = DriverManager.getConnection("jdbc:derby://ianlamb.com:1527/Stores");
         }
         catch (Exception e) 
         {
