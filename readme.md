@@ -1,4 +1,6 @@
-STORE FINDER - UI DEMO
+STORE FINDER - UI PROTOTYPE
+
+Demo - http://ianlamb.com/app/storefinder/
 
 Notes
 ===========
